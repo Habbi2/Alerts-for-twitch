@@ -47,24 +47,9 @@ const CONFIG = {
 };
 
 // ============================================
-// EMBEDDED AUDIO (Base64 - Simple Synth Tones)
+// SOUND MANAGER (Web Audio API)
 // ============================================
-const SOUNDS = {
-    // Simple notification beep for follows
-    follow: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1sbJuYmIFtXWBvmpqaiHFhXmh4jZGQinRramyAiImFfXZ0dHl/gIF/fHl3eHp8fn59fHt6e3x9fn5+fXx7e3x9fn9/fn18fHx9fX5+fn59fX19fX5+fn5+fn19fX19fn5+fn5+fX19fX1+fn5+fn59fX19fX5+fn5+fn19fX19fn5+',
-    
-    // Richer tone for subscriptions
-    subscription: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAAB4jKWwpYx4T0VXdJixtKOCXEREWHuYqa6hhWZTU2F/l6WooYhvX1xld4qaoZ2Qf3JtcHqHkZeXkoh+d3V3foaLjo6LhYB8e3x/g4eJiYeFgn9+foCChIaHhoSCgH9+f4GDhYaGhYOBf39/gYKEhYWFg4KAgICBgoOEhYSEgoGAgICBgoOEhISEgoGAgICBgoODhISEgoGAgICBgoODhISEgoGAgA==',
-    
-    // Epic sound for donations
-    donation: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAABMdqjI2867h1MzMFB9rdDdzrN+TzY2RW2Xxc/NvZRqSz9GXYCitLmxm3xjUU9ZbIGPmpqRgnBlXl1iaXN7gYOBfHZwbGprbXF1eHp5dnNwbm1ucHN2eHl4dnRxb29wcnR2eHh3dnRycHBxcnR1d3d3dnVzcnFxcnN0dXZ3dnZ1dHNycnJzdHV2dnZ2dXRzcnJyc3R1dnZ2dnV0c3JycnNzdHV1dnZ1dXRzc3NzdHR1dXV1dXR0c3NzdHR1dXV1dXR0c3Nz',
-    
-    // Bits sound
-    bits: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAABbgKS3spl2UDw/WHyerLKlhF5FQE9sj6ivqpN2X05OX3aLm6Sfi3hrXltkcH6JkZGKfnNqZ2lwd4CGiIaAeXNubW9zdnyAgoF9eHRxcHJ1eX1/f3x4dXJxcnR3en1+fXt4dXNycnR2eXt9fHt5dnRzc3R2eHp7e3p4dnRzc3R1d3l6e3p5d3VzdHR1dnh5ent5eHZ0c3R0dXd4eXp5eHd1dHR0dXZ4eXl5eHd2dXR0dXZ3eHl5eHd2dXR0dXZ3eHl5eHd2dXR0',
-    
-    // Raid sound
-    raid: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAAA8aZq4yrqRYjsuOFh6oLjCuJdqQzM1TXSbrbe0oHxbR0NRaISbo6OXgmtbU1Vkd4mWm5eNfm9lYGNsdoCKjo2GfHJqZmhsdHyDh4eCe3RubGxvdHp/goF9d3FubW5xdXt/gH98d3Jvbm9ydnp9fn17d3NwcHFzdnl8fXx6dnNwcHFzdXl7fHt5dnNxcXJzdnh6e3t5d3RycnJzdXd5e3t5d3VzcnJzdHZ4ent6eHZ0cnJyc3V3eXp6eXd1c3JycnR2eHp6eXh2dHNy'
-};
+let soundManager = null;
 
 // ============================================
 // STATE MANAGEMENT
@@ -86,14 +71,7 @@ const elements = {
     alertIcon: document.querySelector('.alert-icon'),
     errorMessage: document.getElementById('error-message'),
     connectionStatus: document.getElementById('connection-status'),
-    statusText: document.querySelector('.status-text'),
-    sounds: {
-        follow: document.getElementById('sound-follow'),
-        subscription: document.getElementById('sound-subscription'),
-        donation: document.getElementById('sound-donation'),
-        bits: document.getElementById('sound-bits'),
-        raid: document.getElementById('sound-raid')
-    }
+    statusText: document.querySelector('.status-text')
 };
 
 // ============================================
@@ -125,16 +103,10 @@ function init() {
 // SOUND INITIALIZATION
 // ============================================
 function initSounds() {
-    elements.sounds.follow.src = SOUNDS.follow;
-    elements.sounds.subscription.src = SOUNDS.subscription;
-    elements.sounds.donation.src = SOUNDS.donation;
-    elements.sounds.bits.src = SOUNDS.bits;
-    elements.sounds.raid.src = SOUNDS.raid;
-    
-    // Set volume
-    Object.values(elements.sounds).forEach(sound => {
-        sound.volume = 0.5;
-    });
+    if (typeof SoundManager !== 'undefined') {
+        soundManager = new SoundManager();
+        console.log('🔊 Sound Manager ready');
+    }
 }
 
 // ============================================
@@ -349,16 +321,8 @@ function hideAlert() {
 // SOUND PLAYBACK
 // ============================================
 function playSound(type) {
-    let soundType = type;
-    
-    // Map resub to subscription sound
-    if (type === 'resub') soundType = 'subscription';
-    if (type === 'host') soundType = 'follow';
-    
-    const sound = elements.sounds[soundType];
-    if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log('Sound play failed:', e));
+    if (soundManager) {
+        soundManager.play(type);
     }
 }
 
@@ -370,20 +334,29 @@ function triggerParticles(type) {
     
     switch (type) {
         case 'donation':
-            particles.burst('confetti', 100);
+            // Epic donation explosion!
+            particles.donationExplosion();
             break;
         case 'bits':
-            particles.burst('sparkle', 80);
+            // Purple sparkle magic
+            particles.burst('bits', 150);
+            particles.shake(12, 400);
+            particles.flashScreen('#b400ff', 200);
             break;
         case 'raid':
-            particles.burst('confetti', 120);
+            // Raid invasion!
+            particles.raidInvasion();
             break;
         case 'subscription':
         case 'resub':
-            particles.burst('sparkle', 50);
+            // Sparkle shower for subs
+            particles.burst('sparkle', 100);
+            particles.shake(6, 300);
+            particles.flashScreen('#ff00aa', 150);
             break;
         case 'follow':
-            particles.burst('sparkle', 20);
+            // Nice sparkle burst for follows
+            particles.burst('sparkle', 60);
             break;
     }
 }
