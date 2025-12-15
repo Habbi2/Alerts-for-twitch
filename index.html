@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habbi3 Stream Alerts</title>
+    
+    <!-- Google Fonts - Cyberpunk Style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Socket.IO Client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Particle Canvas Layer -->
+    <canvas id="particles"></canvas>
+    
+    <!-- Alert Container -->
+    <div id="alert-container">
+        <!-- Error Message (shown when no token) -->
+        <div id="error-message" class="hidden">
+            <div class="error-box">
+                <span class="error-icon">⚠</span>
+                <span class="error-text">Add your Streamlabs token to the URL</span>
+                <span class="error-hint">?token=YOUR_TOKEN_HERE</span>
+            </div>
+        </div>
+        
+        <!-- Connection Status -->
+        <div id="connection-status" class="hidden">
+            <span class="status-dot"></span>
+            <span class="status-text">Connecting...</span>
+        </div>
+        
+        <!-- Alert Box Template -->
+        <div id="alert-box" class="hidden">
+            <div class="alert-glow"></div>
+            <div class="alert-content">
+                <div class="alert-icon-wrapper">
+                    <div class="alert-icon"></div>
+                </div>
+                <div class="alert-info">
+                    <div class="alert-type"></div>
+                    <div class="alert-username"></div>
+                    <div class="alert-message"></div>
+                    <div class="alert-amount"></div>
+                </div>
+            </div>
+            <div class="alert-border"></div>
+            <div class="scanline"></div>
+        </div>
+    </div>
+    
+    <!-- Audio Elements -->
+    <audio id="sound-follow" preload="auto"></audio>
+    <audio id="sound-subscription" preload="auto"></audio>
+    <audio id="sound-donation" preload="auto"></audio>
+    <audio id="sound-bits" preload="auto"></audio>
+    <audio id="sound-raid" preload="auto"></audio>
+    
+    <!-- Scripts -->
+    <script src="js/particles.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
