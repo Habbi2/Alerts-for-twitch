@@ -1,22 +1,40 @@
 /* ============================================
-   HABBI3 STREAM ALERTS - NEON CYBERPUNK THEME
+   HABBI3 STREAM ALERTS - DARK SOULS 8-BIT GOTHIC
    ============================================ */
 
-/* CSS Variables - Neon Cyberpunk Palette */
+/* Google Fonts - 8-bit Pixel Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* CSS Variables - Dark Souls Gothic Palette */
 :root {
-    --neon-cyan: #00f0ff;
-    --neon-pink: #ff00aa;
-    --neon-purple: #b400ff;
-    --neon-yellow: #f0ff00;
-    --neon-green: #00ff88;
-    --dark-bg: #0a0a12;
-    --dark-surface: #12121f;
-    --glow-intensity: 0.8;
+    /* Primary colors - Blood and Bone */
+    --blood-red: #8b0000;
+    --bone-white: #e8e4d9;
+    --dark-bg: #0a0808;
+    --dark-surface: #12100f;
+    --muted-brown: #5a524a;
+    --rust-brown: #5c3a21;
+    
+    /* Accent colors */
+    --accent-cyan: #7a9b8c;
+    --accent-gold: #b8860b;
+    --text-muted: #a89f8f;
+    
+    /* Legacy compatibility */
+    --neon-cyan: var(--accent-cyan);
+    --neon-pink: var(--blood-red);
+    --neon-purple: #4a3728;
+    --neon-yellow: var(--bone-white);
+    --neon-green: var(--accent-cyan);
     
     /* Alert Timing */
     --alert-duration: 7s;
-    --entrance-duration: 0.8s;
-    --exit-duration: 0.6s;
+    --entrance-duration: 0.6s;
+    --exit-duration: 0.4s;
+    
+    /* Typography */
+    --font-display: 'Press Start 2P', cursive;
+    --font-primary: 'VT323', monospace;
 }
 
 /* Reset & Base */
@@ -29,13 +47,17 @@
 body {
     background: transparent;
     overflow: hidden;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-primary);
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding-top: 20px;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 .hidden {
@@ -66,36 +88,37 @@ body {
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: rgba(10, 10, 18, 0.9);
-    border: 1px solid var(--neon-cyan);
+    background: rgba(10, 8, 8, 0.92);
+    border: 2px solid var(--blood-red);
     border-radius: 4px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 12px;
-    color: var(--neon-cyan);
+    font-family: var(--font-display);
+    font-size: 8px;
+    color: var(--bone-white);
     text-transform: uppercase;
     letter-spacing: 1px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 .status-dot {
     width: 8px;
     height: 8px;
-    border-radius: 50%;
-    background: var(--neon-yellow);
-    animation: pulse 1s ease-in-out infinite;
+    border-radius: 0;
+    background: var(--blood-red);
+    animation: pulse 1s steps(2) infinite;
 }
 
 #connection-status.connected .status-dot {
-    background: var(--neon-green);
+    background: var(--accent-cyan);
     animation: none;
 }
 
 #connection-status.connected .status-text {
-    color: var(--neon-green);
+    color: var(--accent-cyan);
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }
 
 /* ============================================
@@ -114,35 +137,32 @@ body {
     align-items: center;
     gap: 12px;
     padding: 30px 50px;
-    background: rgba(10, 10, 18, 0.95);
-    border: 2px solid var(--neon-pink);
-    border-radius: 8px;
-    box-shadow: 
-        0 0 20px rgba(255, 0, 170, 0.3),
-        inset 0 0 20px rgba(255, 0, 170, 0.1);
+    background: rgba(10, 8, 8, 0.95);
+    border: 3px solid var(--blood-red);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
 .error-icon {
     font-size: 48px;
-    filter: drop-shadow(0 0 10px var(--neon-pink));
+    filter: drop-shadow(2px 2px 0 var(--blood-red));
 }
 
 .error-text {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
-    color: var(--neon-pink);
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--blood-red);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
 .error-hint {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-primary);
+    font-size: 16px;
+    color: var(--text-muted);
     background: rgba(0, 0, 0, 0.5);
     padding: 8px 16px;
-    border-radius: 4px;
-    font-family: monospace;
+    border-radius: 2px;
 }
 
 /* ============================================
@@ -152,64 +172,57 @@ body {
     position: relative;
     width: 600px;
     min-height: 140px;
-    background: linear-gradient(135deg, rgba(10, 10, 18, 0.95) 0%, rgba(18, 18, 31, 0.95) 100%);
-    border-radius: 12px;
+    background: rgba(10, 8, 8, 0.95);
+    border: 3px solid var(--blood-red);
+    border-radius: 4px;
     overflow: hidden;
-    transform-style: preserve-3d;
-    perspective: 1000px;
+    will-change: transform, opacity;
+    contain: layout style paint;
+    /* Pixel-style box shadow */
+    box-shadow: 
+        4px 4px 0 rgba(0, 0, 0, 0.5),
+        inset 0 0 0 2px rgba(232, 228, 217, 0.1);
 }
 
-/* Animated Glow Background */
+/* Gothic accent border - replaces animated glow */
 .alert-glow {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg,
-        transparent,
-        var(--neon-cyan),
-        transparent,
-        var(--neon-pink),
-        transparent,
-        var(--neon-purple),
-        transparent
-    );
-    animation: rotate-glow 3s linear infinite;
-    opacity: 0.3;
-}
-
-@keyframes rotate-glow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    border: 2px dashed rgba(139, 0, 0, 0.3);
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: 1;
 }
 
 /* Inner Border */
 .alert-border {
     position: absolute;
     inset: 2px;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 2px;
+    border: 1px solid rgba(232, 228, 217, 0.15);
     pointer-events: none;
 }
 
-/* Scanline Effect */
+/* Scanline Effect - FPS safe with transform */
 .scanline {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-    animation: scanline 2s linear infinite;
-    opacity: 0.5;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
+    animation: scanline 3s steps(20) infinite;
+    opacity: 0.4;
+    will-change: transform;
 }
 
 @keyframes scanline {
-    0% { top: 0; opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { top: 100%; opacity: 0.5; }
+    0% { transform: translateY(0); opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { transform: translateY(140px); opacity: 0.3; }
 }
 
 /* Alert Content */
@@ -220,12 +233,12 @@ body {
     align-items: center;
     gap: 20px;
     padding: 20px 30px;
-    background: linear-gradient(135deg, rgba(10, 10, 18, 0.98) 0%, rgba(18, 18, 31, 0.98) 100%);
-    border-radius: 10px;
+    background: rgba(10, 8, 8, 0.98);
+    border-radius: 2px;
     margin: 2px;
 }
 
-/* Icon Wrapper */
+/* Icon Wrapper - Gothic frame */
 .alert-icon-wrapper {
     flex-shrink: 0;
     width: 80px;
@@ -233,17 +246,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(180, 0, 255, 0.1) 100%);
-    border-radius: 50%;
-    border: 2px solid var(--neon-cyan);
+    background: var(--dark-bg);
+    border-radius: 4px;
+    border: 3px solid var(--bone-white);
     box-shadow: 
-        0 0 20px rgba(0, 240, 255, 0.3),
-        inset 0 0 20px rgba(0, 240, 255, 0.1);
+        3px 3px 0 rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px var(--blood-red);
 }
 
 .alert-icon {
     font-size: 40px;
-    filter: drop-shadow(0 0 10px currentColor);
+    filter: drop-shadow(2px 2px 0 var(--blood-red));
 }
 
 /* Alert Info */
@@ -251,35 +264,35 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .alert-type {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: 8px;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
+    letter-spacing: 2px;
+    color: var(--blood-red);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .alert-username {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--bone-white);
     text-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.5),
-        0 0 20px var(--neon-cyan);
-    line-height: 1.2;
+        3px 3px 0 var(--blood-red),
+        0 0 0 transparent;
+    line-height: 1.4;
 }
 
 .alert-message {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 16px;
+    font-family: var(--font-primary);
+    font-size: 18px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-muted);
     max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -287,168 +300,131 @@ body {
 }
 
 .alert-amount {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--neon-yellow);
-    text-shadow: 0 0 15px var(--neon-yellow);
+    font-family: var(--font-primary);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--bone-white);
+    text-shadow: 2px 2px 0 var(--blood-red);
 }
 
 /* ============================================
    ALERT ANIMATIONS - ENTRANCE
    ============================================ */
 
-/* Base Entrance - Glitch Slide */
+/* Base Entrance - 8-bit stepped slide */
 #alert-box.entrance {
-    animation: glitch-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: gothic-entrance var(--entrance-duration) steps(6) forwards;
 }
 
-@keyframes glitch-entrance {
+@keyframes gothic-entrance {
     0% {
         opacity: 0;
-        transform: translateY(-100px) scale(0.8) rotateX(20deg);
-        filter: blur(10px) hue-rotate(90deg);
+        transform: translateY(-50px) scale(0.9);
     }
-    20% {
+    33% {
         opacity: 1;
-        transform: translateY(10px) scale(1.05) rotateX(-5deg);
-        filter: blur(0) hue-rotate(0deg);
+        transform: translateY(8px) scale(1.02);
     }
-    30% {
-        transform: translateX(-5px) scale(1.02);
-        filter: hue-rotate(-20deg);
-    }
-    40% {
-        transform: translateX(5px) scale(1.02);
-        filter: hue-rotate(20deg);
-    }
-    50% {
-        transform: translateX(-3px) scale(1.01);
-    }
-    60% {
-        transform: translateX(3px) scale(1.01);
+    66% {
+        transform: translateY(-4px) scale(1);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) scale(1) rotateX(0deg);
-        filter: blur(0) hue-rotate(0deg);
+        transform: translateY(0) scale(1);
     }
 }
 
-/* Exit Animation */
+/* Exit Animation - 8-bit fade */
 #alert-box.exit {
-    animation: glitch-exit var(--exit-duration) cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+    animation: gothic-exit var(--exit-duration) steps(4) forwards;
 }
 
-@keyframes glitch-exit {
+@keyframes gothic-exit {
     0% {
         opacity: 1;
         transform: translateY(0) scale(1);
-        filter: blur(0);
     }
-    30% {
-        transform: translateX(10px) scale(1.02);
-        filter: hue-rotate(30deg);
-    }
-    60% {
-        transform: translateX(-10px) scale(0.98);
-        filter: hue-rotate(-30deg);
+    50% {
+        opacity: 0.5;
+        transform: translateY(-10px) scale(0.98);
     }
     100% {
         opacity: 0;
-        transform: translateY(-50px) scale(0.8) rotateX(-20deg);
-        filter: blur(10px) hue-rotate(90deg);
+        transform: translateY(-30px) scale(0.95);
     }
 }
 
 /* ============================================
-   ALERT TYPES - DONATION (TIER 1 - MOST EPIC)
+   ALERT TYPES - DONATION (TIER 1 - EPIC)
    ============================================ */
 #alert-box.donation {
-    --alert-color: var(--neon-yellow);
+    --alert-color: var(--bone-white);
+    border-color: var(--bone-white);
     box-shadow: 
-        0 0 30px rgba(240, 255, 0, 0.4),
-        0 0 60px rgba(240, 255, 0, 0.2),
-        0 0 100px rgba(240, 255, 0, 0.1);
+        4px 4px 0 rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(232, 228, 217, 0.2);
 }
 
 #alert-box.donation .alert-glow {
-    background: conic-gradient(
-        from 0deg,
-        transparent,
-        var(--neon-yellow),
-        var(--neon-pink),
-        transparent,
-        var(--neon-yellow),
-        var(--neon-purple),
-        transparent
-    );
-    opacity: 0.5;
-    animation: rotate-glow 1.5s linear infinite;
+    border-color: rgba(232, 228, 217, 0.3);
 }
 
 #alert-box.donation .alert-icon-wrapper {
-    border-color: var(--neon-yellow);
-    background: linear-gradient(135deg, rgba(240, 255, 0, 0.2) 0%, rgba(255, 0, 170, 0.2) 100%);
-    box-shadow: 
-        0 0 30px rgba(240, 255, 0, 0.5),
-        inset 0 0 20px rgba(240, 255, 0, 0.2);
-    animation: icon-pulse-donation 0.5s ease-in-out infinite alternate;
+    border-color: var(--bone-white);
+    background: rgba(232, 228, 217, 0.1);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+    animation: icon-pulse-donation 0.8s steps(2) infinite alternate;
 }
 
 @keyframes icon-pulse-donation {
     from { transform: scale(1); }
-    to { transform: scale(1.1); }
+    to { transform: scale(1.05); }
 }
 
+
 #alert-box.donation .alert-type {
-    color: var(--neon-yellow);
-    text-shadow: 0 0 15px var(--neon-yellow);
+    color: var(--bone-white);
+    text-shadow: 2px 2px 0 var(--blood-red);
 }
 
 #alert-box.donation .alert-username {
     text-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.8),
-        0 0 30px var(--neon-yellow);
-    animation: text-glow-donation 0.3s ease-in-out infinite alternate;
+        3px 3px 0 var(--blood-red),
+        6px 6px 0 rgba(0, 0, 0, 0.3);
+    animation: text-pulse-donation 1s steps(2) infinite alternate;
 }
 
-@keyframes text-glow-donation {
-    from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 30px var(--neon-yellow); }
-    to { text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 50px var(--neon-yellow), 0 0 80px var(--neon-pink); }
+@keyframes text-pulse-donation {
+    from { opacity: 0.9; }
+    to { opacity: 1; }
 }
 
 #alert-box.donation .scanline {
-    background: linear-gradient(90deg, transparent, var(--neon-yellow), var(--neon-pink), transparent);
-    animation: scanline 1s linear infinite;
+    background: linear-gradient(90deg, transparent, var(--bone-white), transparent);
+    animation: scanline 2s steps(15) infinite;
 }
 
 #alert-box.donation.entrance {
-    animation: donation-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: donation-entrance var(--entrance-duration) steps(8) forwards;
 }
 
 @keyframes donation-entrance {
     0% {
         opacity: 0;
-        transform: scale(0) rotateY(180deg);
-        filter: blur(20px) brightness(3);
+        transform: scale(0.8) translateY(-20px);
     }
-    30% {
+    25% {
         opacity: 1;
-        transform: scale(1.2) rotateY(0deg);
-        filter: blur(0) brightness(2);
+        transform: scale(1.1) translateY(5px);
     }
     50% {
-        transform: scale(0.95) rotateY(-10deg);
-        filter: brightness(1.5);
+        transform: scale(0.95) translateY(-3px);
     }
-    70% {
-        transform: scale(1.05) rotateY(5deg);
-        filter: brightness(1.2);
+    75% {
+        transform: scale(1.02) translateY(1px);
     }
     100% {
-        transform: scale(1) rotateY(0deg);
-        filter: blur(0) brightness(1);
+        transform: scale(1) translateY(0);
     }
 }
 
@@ -456,113 +432,90 @@ body {
    ALERT TYPES - BITS (TIER 1 - EPIC)
    ============================================ */
 #alert-box.bits {
-    --alert-color: var(--neon-purple);
+    --alert-color: var(--rust-brown);
+    border-color: var(--rust-brown);
     box-shadow: 
-        0 0 30px rgba(180, 0, 255, 0.4),
-        0 0 60px rgba(180, 0, 255, 0.2);
+        4px 4px 0 rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(92, 58, 33, 0.3);
 }
 
 #alert-box.bits .alert-glow {
-    background: conic-gradient(
-        from 0deg,
-        transparent,
-        var(--neon-purple),
-        var(--neon-cyan),
-        transparent,
-        var(--neon-purple),
-        var(--neon-pink),
-        transparent
-    );
-    opacity: 0.5;
+    border-color: rgba(92, 58, 33, 0.4);
 }
 
 #alert-box.bits .alert-icon-wrapper {
-    border-color: var(--neon-purple);
-    background: linear-gradient(135deg, rgba(180, 0, 255, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%);
-    box-shadow: 0 0 25px rgba(180, 0, 255, 0.5);
+    border-color: var(--rust-brown);
+    background: rgba(92, 58, 33, 0.2);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.bits .alert-type {
-    color: var(--neon-purple);
-    text-shadow: 0 0 15px var(--neon-purple);
+    color: var(--rust-brown);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.bits .alert-amount {
-    color: var(--neon-purple);
-    text-shadow: 0 0 15px var(--neon-purple);
+    color: var(--bone-white);
+    text-shadow: 2px 2px 0 var(--rust-brown);
 }
 
 #alert-box.bits.entrance {
-    animation: donation-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: donation-entrance var(--entrance-duration) steps(8) forwards;
 }
 
 /* ============================================
    ALERT TYPES - SUBSCRIPTION (TIER 2)
    ============================================ */
 #alert-box.subscription {
-    --alert-color: var(--neon-pink);
+    --alert-color: var(--blood-red);
+    border-color: var(--blood-red);
     box-shadow: 
-        0 0 25px rgba(255, 0, 170, 0.3),
-        0 0 50px rgba(255, 0, 170, 0.15);
+        4px 4px 0 rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(139, 0, 0, 0.3);
 }
 
 #alert-box.subscription .alert-glow {
-    background: conic-gradient(
-        from 0deg,
-        transparent,
-        var(--neon-pink),
-        transparent,
-        var(--neon-purple),
-        transparent
-    );
-    opacity: 0.4;
-    animation: rotate-glow 2s linear infinite;
+    border-color: rgba(139, 0, 0, 0.4);
 }
 
 #alert-box.subscription .alert-icon-wrapper {
-    border-color: var(--neon-pink);
-    background: linear-gradient(135deg, rgba(255, 0, 170, 0.15) 0%, rgba(180, 0, 255, 0.15) 100%);
-    box-shadow: 0 0 20px rgba(255, 0, 170, 0.4);
+    border-color: var(--blood-red);
+    background: rgba(139, 0, 0, 0.15);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.subscription .alert-type {
-    color: var(--neon-pink);
-    text-shadow: 0 0 10px var(--neon-pink);
+    color: var(--blood-red);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.subscription .alert-username {
     text-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.5),
-        0 0 25px var(--neon-pink);
+        3px 3px 0 var(--blood-red);
 }
 
 #alert-box.subscription .scanline {
-    background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+    background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
 }
 
 #alert-box.subscription.entrance {
-    animation: subscription-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: subscription-entrance var(--entrance-duration) steps(6) forwards;
 }
 
 @keyframes subscription-entrance {
     0% {
         opacity: 0;
-        transform: translateX(-100%) rotateZ(-5deg) scale(0.9);
-        filter: blur(10px);
+        transform: translateX(-60px);
     }
     40% {
         opacity: 1;
-        transform: translateX(20px) rotateZ(2deg) scale(1.05);
-        filter: blur(0);
+        transform: translateX(10px);
     }
-    60% {
-        transform: translateX(-10px) rotateZ(-1deg) scale(1.02);
-    }
-    80% {
-        transform: translateX(5px) rotateZ(0.5deg) scale(1.01);
+    70% {
+        transform: translateX(-5px);
     }
     100% {
-        transform: translateX(0) rotateZ(0deg) scale(1);
+        transform: translateX(0);
     }
 }
 
@@ -570,74 +523,61 @@ body {
    ALERT TYPES - RAID (TIER 2)
    ============================================ */
 #alert-box.raid {
-    --alert-color: var(--neon-green);
+    --alert-color: var(--accent-cyan);
+    border-color: var(--accent-cyan);
     box-shadow: 
-        0 0 30px rgba(0, 255, 136, 0.4),
-        0 0 60px rgba(0, 255, 136, 0.2);
+        4px 4px 0 rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(122, 155, 140, 0.3);
 }
 
 #alert-box.raid .alert-glow {
-    background: conic-gradient(
-        from 0deg,
-        transparent,
-        var(--neon-green),
-        transparent,
-        var(--neon-cyan),
-        transparent
-    );
-    opacity: 0.5;
+    border-color: rgba(122, 155, 140, 0.4);
 }
 
 #alert-box.raid .alert-icon-wrapper {
-    border-color: var(--neon-green);
-    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%);
-    box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
-    animation: icon-pulse-raid 0.6s ease-in-out infinite alternate;
+    border-color: var(--accent-cyan);
+    background: rgba(122, 155, 140, 0.15);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+    animation: icon-pulse-raid 1s steps(2) infinite alternate;
 }
 
 @keyframes icon-pulse-raid {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1.1) rotate(5deg); }
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
 }
 
 #alert-box.raid .alert-type {
-    color: var(--neon-green);
-    text-shadow: 0 0 15px var(--neon-green);
+    color: var(--accent-cyan);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.raid .alert-amount {
-    color: var(--neon-green);
-    text-shadow: 0 0 15px var(--neon-green);
+    color: var(--accent-cyan);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.raid .scanline {
-    background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
 }
 
 #alert-box.raid.entrance {
-    animation: raid-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: raid-entrance var(--entrance-duration) steps(6) forwards;
 }
 
 @keyframes raid-entrance {
     0% {
         opacity: 0;
-        transform: scale(2) translateY(-50px);
-        filter: blur(20px) brightness(2);
+        transform: scale(1.3) translateY(-30px);
     }
-    30% {
+    33% {
         opacity: 1;
-        transform: scale(0.9) translateY(10px);
-        filter: blur(0) brightness(1.5);
+        transform: scale(0.95) translateY(5px);
     }
-    50% {
-        transform: scale(1.1) translateY(-5px);
-    }
-    70% {
-        transform: scale(0.98) translateY(2px);
+    66% {
+        transform: scale(1.05) translateY(-3px);
     }
     100% {
         transform: scale(1) translateY(0);
-        filter: brightness(1);
     }
 }
 
@@ -645,19 +585,17 @@ body {
    ALERT TYPES - FOLLOW (TIER 3 - MINIMAL)
    ============================================ */
 #alert-box.follow {
-    --alert-color: var(--neon-cyan);
-    box-shadow: 
-        0 0 20px rgba(0, 240, 255, 0.25),
-        0 0 40px rgba(0, 240, 255, 0.1);
+    --alert-color: var(--muted-brown);
+    border-color: var(--muted-brown);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.follow .alert-glow {
-    opacity: 0.25;
-    animation: rotate-glow 4s linear infinite;
+    opacity: 0.2;
 }
 
 #alert-box.follow .alert-icon-wrapper {
-    border-color: var(--neon-cyan);
+    border-color: var(--muted-brown);
     width: 70px;
     height: 70px;
 }
@@ -667,29 +605,25 @@ body {
 }
 
 #alert-box.follow .alert-username {
-    font-size: 24px;
-    text-shadow: 
-        0 0 8px rgba(255, 255, 255, 0.4),
-        0 0 15px var(--neon-cyan);
+    font-size: 14px;
+    text-shadow: 2px 2px 0 var(--muted-brown);
 }
 
 #alert-box.follow.entrance {
-    animation: follow-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: follow-entrance var(--entrance-duration) steps(4) forwards;
 }
 
 @keyframes follow-entrance {
     0% {
         opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-        filter: blur(5px);
+        transform: translateY(-20px);
     }
     50% {
         opacity: 1;
-        transform: translateY(5px) scale(1.02);
-        filter: blur(0);
+        transform: translateY(3px);
     }
     100% {
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
@@ -697,49 +631,39 @@ body {
    ALERT TYPES - HOST (TIER 3)
    ============================================ */
 #alert-box.host {
-    --alert-color: var(--neon-cyan);
-    box-shadow: 
-        0 0 20px rgba(0, 240, 255, 0.3),
-        0 0 40px rgba(0, 240, 255, 0.15);
+    --alert-color: var(--muted-brown);
+    border-color: var(--muted-brown);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 #alert-box.host .alert-glow {
-    opacity: 0.3;
+    opacity: 0.2;
 }
 
 #alert-box.host .alert-icon-wrapper {
-    border-color: var(--neon-cyan);
+    border-color: var(--muted-brown);
 }
 
 #alert-box.host.entrance {
-    animation: follow-entrance var(--entrance-duration) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: follow-entrance var(--entrance-duration) steps(4) forwards;
 }
 
 /* ============================================
-   CHROMATIC ABERRATION EFFECT
+   8-BIT TEXT EFFECT (replaces chromatic)
    ============================================ */
 #alert-box.chromatic .alert-username {
-    animation: chromatic 0.1s infinite;
+    animation: pixelFlicker 0.5s steps(1) infinite;
 }
 
-@keyframes chromatic {
-    0% {
+@keyframes pixelFlicker {
+    0%, 90% {
         text-shadow: 
-            -2px 0 var(--neon-cyan),
-            2px 0 var(--neon-pink),
-            0 0 10px rgba(255, 255, 255, 0.5);
+            3px 3px 0 var(--blood-red);
     }
-    50% {
+    95% {
         text-shadow: 
-            2px 0 var(--neon-cyan),
-            -2px 0 var(--neon-pink),
-            0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    100% {
-        text-shadow: 
-            -2px 0 var(--neon-cyan),
-            2px 0 var(--neon-pink),
-            0 0 10px rgba(255, 255, 255, 0.5);
+            4px 4px 0 var(--blood-red),
+            -1px 0 0 var(--accent-cyan);
     }
 }
 

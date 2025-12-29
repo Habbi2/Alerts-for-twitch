@@ -1,7 +1,11 @@
 /* ============================================
    HABBI3 STREAM ALERTS - PARTICLE SYSTEM V2
-   Ultra Enhanced Neon Cyberpunk Effects
+   FPS-Safe Dark Souls Gothic Theme
    ============================================ */
+
+// FPS-Safe Constants
+const MAX_PARTICLES = 150;
+const BATCH_SIZE = 30;
 
 class ParticleSystem {
     constructor(canvasId) {
@@ -12,56 +16,62 @@ class ParticleSystem {
         this.screenShake = { x: 0, y: 0, intensity: 0 };
         this.flash = { opacity: 0, color: '#ffffff' };
         this.animationId = null;
+        this.isRunning = false;
         
-        // Enhanced neon colors
+        // Gothic Dark Souls color palette
         this.colors = {
             confetti: [
-                '#00f0ff', // Cyan
-                '#ff00aa', // Pink
-                '#b400ff', // Purple
-                '#f0ff00', // Yellow
-                '#00ff88', // Green
-                '#ff6b00', // Orange
-                '#ff0055', // Red
-                '#00ffcc', // Teal
-                '#ff00ff', // Magenta
-                '#88ff00', // Lime
+                '#8b0000', // Blood red
+                '#e8e4d9', // Bone white
+                '#5c3a21', // Rust brown
+                '#a89f8f', // Muted tan
+                '#5a524a', // Dark brown
+                '#7a9b8c', // Faded cyan
+                '#4a3728', // Dark rust
+                '#b8860b', // Dark gold
             ],
             sparkle: [
-                '#ffffff',
-                '#00f0ff',
-                '#ff00aa',
-                '#f0ff00',
-                '#b400ff',
+                '#e8e4d9', // Bone white
+                '#8b0000', // Blood red
+                '#a89f8f', // Muted
+                '#5c3a21', // Rust
             ],
             donation: [
-                '#f0ff00', // Yellow
-                '#ffcc00', // Gold
-                '#ff9500', // Orange
-                '#ffffff', // White
+                '#e8e4d9', // Bone white (primary)
+                '#f5f1e6', // Bright bone
+                '#a89f8f', // Muted tan
+                '#8b0000', // Blood accent
             ],
             bits: [
-                '#b400ff', // Purple
-                '#ff00aa', // Pink
-                '#00f0ff', // Cyan
-                '#ffffff',
+                '#5c3a21', // Rust brown
+                '#8b0000', // Blood red
+                '#4a3728', // Dark rust
+                '#e8e4d9', // Bone white
             ],
             raid: [
-                '#00ff88', // Green
-                '#00f0ff', // Cyan
-                '#ffffff',
-                '#88ff00', // Lime
+                '#7a9b8c', // Faded cyan
+                '#e8e4d9', // Bone white
+                '#5a524a', // Dark brown
+                '#8b0000', // Blood accent
             ]
         };
         
         this.resize();
         window.addEventListener('resize', () => this.resize());
-        this.animate();
+        // Don't auto-start - will start when particles are added
     }
     
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+    }
+    
+    // Start animation loop if not running
+    startLoop() {
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.animate();
+        }
     }
     
     // ============================================
@@ -113,111 +123,90 @@ class ParticleSystem {
         const centerY = options.y || this.canvas.height / 3;
         const colors = this.colors[type] || this.colors.confetti;
         
-        // Add screen effects for big bursts
+        // Reduced screen effects for FPS safety
         if (count >= 80) {
-            this.shake(count >= 150 ? 15 : 8, 400);
-            this.flashScreen(colors[0], 200);
+            this.shake(count >= 150 ? 8 : 5, 300);
+            this.flashScreen(colors[0], 150);
         }
         
-        // Staggered particle creation for epic effect
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-                if (type === 'confetti' || type === 'donation' || type === 'raid') {
-                    this.createConfetti(centerX, centerY, colors);
-                    // Add extra effects for donations
-                    if (type === 'donation' && Math.random() > 0.5) {
-                        this.createGlowOrb(centerX, centerY, colors);
-                    }
-                } else if (type === 'sparkle' || type === 'bits') {
-                    this.createSparkle(centerX, centerY, colors);
-                    if (Math.random() > 0.7) {
-                        this.createRing(centerX, centerY, colors);
-                    }
-                }
-            }, i * 8);
+        // Batch particle creation (no staggered setTimeout)
+        const actualCount = Math.min(count, BATCH_SIZE);
+        for (let i = 0; i < actualCount; i++) {
+            if (this.particles.length >= MAX_PARTICLES) break;
+            
+            if (type === 'confetti' || type === 'donation' || type === 'raid') {
+                this.createConfetti(centerX, centerY, colors);
+            } else if (type === 'sparkle' || type === 'bits') {
+                this.createSparkle(centerX, centerY, colors);
+            }
         }
         
-        // Add ambient particles
-        this.createAmbientBurst(centerX, centerY, Math.floor(count / 3), colors);
+        // Add a few ambient particles
+        this.createAmbientBurst(centerX, centerY, Math.min(Math.floor(count / 5), 10), colors);
+        
+        // Start animation loop
+        this.startLoop();
     }
     
-    // Special donation explosion
+    // Special donation explosion - FPS optimized
     donationExplosion(amount = 10) {
         const centerX = this.canvas.width / 2;
         const centerY = this.canvas.height / 3;
         const colors = this.colors.donation;
         
-        // Massive screen effects
-        this.shake(20, 600);
-        this.flashScreen('#f0ff00', 300);
+        // Reduced screen effects
+        this.shake(10, 400);
+        this.flashScreen('#e8e4d9', 200);
         
-        // Central explosion
-        for (let i = 0; i < 150; i++) {
-            setTimeout(() => {
-                this.createConfetti(centerX, centerY, colors);
-            }, i * 5);
+        // Batch create particles (no setTimeout spam)
+        const confettiCount = Math.min(50, MAX_PARTICLES - this.particles.length);
+        for (let i = 0; i < confettiCount; i++) {
+            this.createConfetti(centerX, centerY, colors);
         }
         
-        // Expanding rings
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
+        // Add 2-3 expanding rings
+        for (let i = 0; i < 3; i++) {
+            if (this.particles.length < MAX_PARTICLES) {
                 this.createExpandingRing(centerX, centerY, colors[i % colors.length]);
-            }, i * 100);
+            }
         }
         
-        // Sparkle shower
-        for (let i = 0; i < 80; i++) {
-            setTimeout(() => {
-                this.createSparkle(
-                    Math.random() * this.canvas.width,
-                    -50,
-                    colors
-                );
-            }, 200 + i * 15);
+        // Add some sparkles
+        const sparkleCount = Math.min(20, MAX_PARTICLES - this.particles.length);
+        for (let i = 0; i < sparkleCount; i++) {
+            this.createSparkle(
+                centerX + (Math.random() - 0.5) * 300,
+                centerY + (Math.random() - 0.5) * 150,
+                colors
+            );
         }
         
-        // Glow orbs
-        for (let i = 0; i < 20; i++) {
-            setTimeout(() => {
-                this.createGlowOrb(centerX, centerY, colors);
-            }, i * 30);
-        }
-        
-        // Firework bursts at different positions
-        setTimeout(() => this.createFirework(centerX - 200, centerY, colors), 300);
-        setTimeout(() => this.createFirework(centerX + 200, centerY, colors), 450);
-        setTimeout(() => this.createFirework(centerX, centerY - 100, colors), 600);
+        // Start animation loop
+        this.startLoop();
     }
     
-    // Raid invasion effect
+    // Raid invasion effect - FPS optimized
     raidInvasion() {
         const colors = this.colors.raid;
         
-        this.shake(25, 800);
-        this.flashScreen('#00ff88', 400);
+        this.shake(12, 500);
+        this.flashScreen('#7a9b8c', 250);
         
-        // Wave of particles from top
-        for (let wave = 0; wave < 3; wave++) {
-            setTimeout(() => {
-                for (let i = 0; i < 60; i++) {
-                    setTimeout(() => {
-                        const x = Math.random() * this.canvas.width;
-                        this.createRaider(x, -50, colors);
-                    }, i * 10);
-                }
-            }, wave * 300);
+        // Single wave of particles from top
+        const raidCount = Math.min(40, MAX_PARTICLES - this.particles.length);
+        for (let i = 0; i < raidCount; i++) {
+            const x = Math.random() * this.canvas.width;
+            this.createRaider(x, -50, colors);
         }
         
-        // Side explosions
-        setTimeout(() => {
-            this.createFirework(100, this.canvas.height / 2, colors);
-            this.createFirework(this.canvas.width - 100, this.canvas.height / 2, colors);
-        }, 500);
+        // Central burst
+        const burstCount = Math.min(30, MAX_PARTICLES - this.particles.length);
+        for (let i = 0; i < burstCount; i++) {
+            this.createConfetti(this.canvas.width / 2, this.canvas.height / 2, colors);
+        }
         
-        // Central impact
-        setTimeout(() => {
-            this.burst('raid', 120, { y: this.canvas.height / 2 });
-        }, 800);
+        // Start animation loop
+        this.startLoop();
     }
     
     // ============================================
@@ -362,21 +351,21 @@ class ParticleSystem {
     }
     
     createAmbientBurst(x, y, count, colors) {
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                this.particles.push({
-                    type: 'ambient',
-                    x: x + (Math.random() - 0.5) * 600,
-                    y: y + (Math.random() - 0.5) * 300,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: -1 - Math.random() * 2,
-                    size: Math.random() * 3 + 1,
-                    color: color,
-                    opacity: 0.6,
-                    fadeSpeed: 0.008
-                });
-            }, i * 20);
+        // Batch create - no setTimeout for FPS safety
+        const actualCount = Math.min(count, MAX_PARTICLES - this.particles.length);
+        for (let i = 0; i < actualCount; i++) {
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            this.particles.push({
+                type: 'ambient',
+                x: x + (Math.random() - 0.5) * 400,
+                y: y + (Math.random() - 0.5) * 200,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: -0.5 - Math.random() * 1.5,
+                size: Math.random() * 3 + 2,
+                color: color,
+                opacity: 0.5,
+                fadeSpeed: 0.012
+            });
         }
     }
     
@@ -385,6 +374,11 @@ class ParticleSystem {
     // ============================================
     
     update() {
+        // Enforce particle cap
+        while (this.particles.length > MAX_PARTICLES) {
+            this.particles.shift();
+        }
+        
         for (let i = this.particles.length - 1; i >= 0; i--) {
             const p = this.particles[i];
             
@@ -548,30 +542,23 @@ class ParticleSystem {
         this.ctx.rotate((p.rotation * Math.PI) / 180);
         this.ctx.globalAlpha = p.opacity;
         
-        // Glow
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 15;
-        
-        // Rectangle with gradient
-        const gradient = this.ctx.createLinearGradient(-p.width/2, 0, p.width/2, 0);
-        gradient.addColorStop(0, p.color);
-        gradient.addColorStop(0.5, '#ffffff');
-        gradient.addColorStop(1, p.color);
-        
-        this.ctx.fillStyle = gradient;
+        // Simple solid color (no shadow for FPS)
+        this.ctx.fillStyle = p.color;
         this.ctx.fillRect(-p.width / 2, -p.height / 2, p.width, p.height);
+        
+        // Pixel-style highlight
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.fillRect(-p.width / 2, -p.height / 2, p.width / 2, p.height / 2);
     }
     
     drawSparkle(p) {
-        // Draw trail
+        // Draw trail (simplified)
         for (let i = 0; i < p.trail.length; i++) {
             const t = p.trail[i];
-            const trailOpacity = (i / p.trail.length) * t.opacity * 0.5;
+            const trailOpacity = (i / p.trail.length) * t.opacity * 0.4;
             this.ctx.globalAlpha = trailOpacity;
             this.ctx.fillStyle = p.color;
-            this.ctx.beginPath();
-            this.ctx.arc(t.x, t.y, p.size * 0.3, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.fillRect(t.x - 1, t.y - 1, 3, 3);
         }
         
         const pulse = Math.sin(p.pulsePhase) * 0.4 + 0.6;
@@ -580,19 +567,13 @@ class ParticleSystem {
         this.ctx.translate(p.x, p.y);
         this.ctx.globalAlpha = p.opacity * pulse;
         
-        // Glow
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 25;
-        
-        // Star shape
+        // Simple star shape (no shadow)
         this.ctx.fillStyle = p.color;
         this.drawStar(0, 0, 4, size, size * 0.4);
         
         // Center bright spot
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, size * 0.25, 0, Math.PI * 2);
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.fill();
+        this.ctx.fillStyle = '#e8e4d9';
+        this.ctx.fillRect(-1, -1, 3, 3);
     }
     
     drawStar(cx, cy, spikes, outerRadius, innerRadius) {
@@ -614,17 +595,17 @@ class ParticleSystem {
     }
     
     drawGlow(p) {
-        this.ctx.globalAlpha = p.opacity;
+        this.ctx.globalAlpha = p.opacity * 0.6;
         
-        // Radial gradient glow
-        const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-        gradient.addColorStop(0, p.color);
-        gradient.addColorStop(0.3, p.color);
-        gradient.addColorStop(1, 'transparent');
-        
-        this.ctx.fillStyle = gradient;
+        // Simple layered circles (no gradient for FPS)
+        this.ctx.fillStyle = p.color;
         this.ctx.beginPath();
         this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        this.ctx.globalAlpha = p.opacity * 0.3;
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
         this.ctx.fill();
     }
     
@@ -632,8 +613,6 @@ class ParticleSystem {
         this.ctx.globalAlpha = p.opacity;
         this.ctx.strokeStyle = p.color;
         this.ctx.lineWidth = p.lineWidth || 2;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 15;
         
         this.ctx.beginPath();
         this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -641,20 +620,16 @@ class ParticleSystem {
     }
     
     drawRaider(p) {
-        // Draw trail
+        // Draw trail (simplified)
         for (let i = 0; i < p.trail.length; i++) {
             const t = p.trail[i];
-            const trailOpacity = (i / p.trail.length) * p.opacity * 0.6;
+            const trailOpacity = (i / p.trail.length) * p.opacity * 0.5;
             this.ctx.globalAlpha = trailOpacity;
             this.ctx.fillStyle = p.color;
-            this.ctx.beginPath();
-            this.ctx.arc(t.x, t.y, p.size * 0.5, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.fillRect(t.x - p.size * 0.25, t.y - p.size * 0.25, p.size * 0.5, p.size * 0.5);
         }
         
         this.ctx.globalAlpha = p.opacity;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 20;
         this.ctx.fillStyle = p.color;
         this.ctx.beginPath();
         this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -662,20 +637,16 @@ class ParticleSystem {
     }
     
     drawFirework(p) {
-        // Trail
+        // Trail (simplified)
         for (let i = 0; i < p.trail.length; i++) {
             const t = p.trail[i];
             const trailOpacity = (i / p.trail.length) * t.opacity;
             this.ctx.globalAlpha = trailOpacity;
             this.ctx.fillStyle = p.color;
-            this.ctx.beginPath();
-            this.ctx.arc(t.x, t.y, p.size * 0.6, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.fillRect(t.x - p.size * 0.3, t.y - p.size * 0.3, p.size * 0.6, p.size * 0.6);
         }
         
         this.ctx.globalAlpha = p.opacity;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 15;
         this.ctx.fillStyle = p.color;
         this.ctx.beginPath();
         this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -684,19 +655,23 @@ class ParticleSystem {
     
     drawAmbient(p) {
         this.ctx.globalAlpha = p.opacity;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 10;
         this.ctx.fillStyle = p.color;
-        this.ctx.beginPath();
-        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        this.ctx.fill();
+        // Pixel-style square instead of circle
+        this.ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
     }
     
     // ============================================
-    // ANIMATION LOOP
+    // ANIMATION LOOP - FPS Safe
     // ============================================
     
     animate() {
+        // Stop loop if nothing to render
+        if (this.particles.length === 0 && this.flash.opacity <= 0 && this.screenShake.intensity <= 0) {
+            this.isRunning = false;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            return;
+        }
+        
         this.update();
         this.draw();
         this.animationId = requestAnimationFrame(() => this.animate());
